@@ -50,7 +50,7 @@ class FoodData:
             document = self.df_original.loc[idx].to_json()
             self.collection.add(documents=[document], ids=[doc_id], metadatas=[metadata], embeddings=[embedding])
 
-    def query(self, food_id: str, n: int =5) -> pd.DataFrame:
+    def query(self, food_id: str, n: int = 6) -> pd.DataFrame:
         idx_list = self.df.index[self.df['id'] == str(food_id)].tolist()
         print(idx_list)
         print(self.df['id'])
@@ -107,4 +107,10 @@ if selected_idx is not None and len(selected_idx) > 0 :
     item = selected_idx[0]
     selected_food_id, selected_food_desc = food_options[item]
     st.write(f"Selected Food: {selected_food_desc} (ID: {selected_food_id})")
-    st.dataframe(data_handler.query(str(selected_food_id)), width='stretch')
+    result_df = data_handler.query(str(selected_food_id))
+    def highlight_first_row(row):
+        return ['background-color: #90caf9' if row.name == 0 else '' for _ in row]
+    st.write(
+        result_df.style.apply(highlight_first_row, axis=1).format(precision=2)
+    )
+    # st.dataframe(data_handler.query(str(selected_food_id)), width='stretch')
